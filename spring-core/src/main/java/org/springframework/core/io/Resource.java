@@ -48,6 +48,7 @@ import org.springframework.lang.Nullable;
  * @see ClassPathResource
  * @see ByteArrayResource
  * @see InputStreamResource
+ * 作为所有资源的统一抽象，其子类为AbstractResource
  */
 public interface Resource extends InputStreamSource {
 
@@ -56,6 +57,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>This method performs a definitive existence check, whereas the
 	 * existence of a {@code Resource} handle only guarantees a valid
 	 * descriptor handle.
+	 * 判断资源是否存在
 	 */
 	boolean exists();
 
@@ -69,6 +71,7 @@ public interface Resource extends InputStreamSource {
 	 * that the resource content cannot be read.
 	 * @see #getInputStream()
 	 * @see #exists()
+	 * 判断资源是否可读
 	 */
 	default boolean isReadable() {
 		return exists();
@@ -79,6 +82,7 @@ public interface Resource extends InputStreamSource {
 	 * If {@code true}, the InputStream cannot be read multiple times,
 	 * and must be read and closed to avoid resource leaks.
 	 * <p>Will be {@code false} for typical resource descriptors.
+	 * 判断资源所代表的句柄是否被一个流打开
 	 */
 	default boolean isOpen() {
 		return false;
@@ -91,6 +95,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>This is conservatively {@code false} by default.
 	 * @since 5.0
 	 * @see #getFile()
+	 * 判断该资源是否为一个File
 	 */
 	default boolean isFile() {
 		return false;
@@ -100,6 +105,8 @@ public interface Resource extends InputStreamSource {
 	 * Return a URL handle for this resource.
 	 * @throws IOException if the resource cannot be resolved as URL,
 	 * i.e. if the resource is not available as descriptor
+	 * 句柄，简单理解为一个期望目标的临时名称，在URL、URI中表示地址，File中表示文件名
+	 * 获取该资源的URL句柄
 	 */
 	URL getURL() throws IOException;
 
@@ -108,6 +115,7 @@ public interface Resource extends InputStreamSource {
 	 * @throws IOException if the resource cannot be resolved as URI,
 	 * i.e. if the resource is not available as descriptor
 	 * @since 2.5
+	 * 获取该资源的URI句柄
 	 */
 	URI getURI() throws IOException;
 
@@ -117,6 +125,7 @@ public interface Resource extends InputStreamSource {
 	 * absolute file path, i.e. if the resource is not available in a file system
 	 * @throws IOException in case of general resolution/reading failures
 	 * @see #getInputStream()
+	 * 返回该资源的File句柄
 	 */
 	File getFile() throws IOException;
 
@@ -130,6 +139,7 @@ public interface Resource extends InputStreamSource {
 	 * @throws IOException if the content channel could not be opened
 	 * @since 5.0
 	 * @see #getInputStream()
+	 * 返回可读字节通道ReadableByteChannel
 	 */
 	default ReadableByteChannel readableChannel() throws IOException {
 		return Channels.newChannel(getInputStream());
@@ -139,6 +149,7 @@ public interface Resource extends InputStreamSource {
 	 * Determine the content length for this resource.
 	 * @throws IOException if the resource cannot be resolved
 	 * (in the file system or as some other known physical resource type)
+	 * 获取资源内容长度
 	 */
 	long contentLength() throws IOException;
 
@@ -146,6 +157,7 @@ public interface Resource extends InputStreamSource {
 	 * Determine the last-modified timestamp for this resource.
 	 * @throws IOException if the resource cannot be resolved
 	 * (in the file system or as some other known physical resource type)
+	 * 获取资源最后修改时间
 	 */
 	long lastModified() throws IOException;
 
@@ -154,6 +166,7 @@ public interface Resource extends InputStreamSource {
 	 * @param relativePath the relative path (relative to this resource)
 	 * @return the resource handle for the relative resource
 	 * @throws IOException if the relative resource cannot be determined
+	 * 根据该资源的相对路径创建新资源
 	 */
 	Resource createRelative(String relativePath) throws IOException;
 
@@ -162,6 +175,7 @@ public interface Resource extends InputStreamSource {
 	 * part of the path: for example, "myfile.txt".
 	 * <p>Returns {@code null} if this type of resource does not
 	 * have a filename.
+	 * 获取该资源的名称
 	 */
 	@Nullable
 	String getFilename();
@@ -172,6 +186,7 @@ public interface Resource extends InputStreamSource {
 	 * <p>Implementations are also encouraged to return this value
 	 * from their {@code toString} method.
 	 * @see Object#toString()
+	 * 获取该资源的描述
 	 */
 	String getDescription();
 
