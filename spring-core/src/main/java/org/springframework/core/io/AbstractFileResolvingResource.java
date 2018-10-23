@@ -39,6 +39,10 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Juergen Hoeller
  * @since 3.0
+ * 抽象的资源处理类，用于委派URL进行具体的资源操作
+ * 类结构
+ * AbstractFileResolvingResource ——> AbstractResource
+ * AbstractFileResolvingResource <—— UrlResource
  */
 public abstract class AbstractFileResolvingResource extends AbstractResource {
 

@@ -28,6 +28,10 @@ import java.nio.channels.WritableByteChannel;
  * @author Juergen Hoeller
  * @since 3.1
  * @see java.io.OutputStream
+ * Resource接口的子接口
+ * 类结构
+ * WritableResource ——> Resource
+ * WritableResource <-- FileSystemResource
  */
 public interface WritableResource extends Resource {
 

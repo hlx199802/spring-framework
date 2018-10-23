@@ -39,6 +39,9 @@ import org.springframework.util.StringUtils;
  * @author Juergen Hoeller
  * @since 28.12.2003
  * @see java.net.URL
+ * 对java.net.URL类型资源的封装，内部委派URL进行具体的资源操作
+ * 类结构
+ * UrlResource ——> AbstractFileResolvingResource
  */
 public class UrlResource extends AbstractFileResolvingResource {
 

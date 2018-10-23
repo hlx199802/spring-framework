@@ -40,6 +40,10 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Juergen Hoeller
  * @since 28.12.2003
+ * 实现了org.springframework.core.io.Resource接口，抽象类
+ * 类结构
+ * AbstractResource --> Resource
+ * AbstractResource <—— FileSystemResource
  */
 public abstract class AbstractResource implements Resource {
 
