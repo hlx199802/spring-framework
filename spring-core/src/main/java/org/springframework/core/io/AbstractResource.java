@@ -44,6 +44,7 @@ import org.springframework.util.ResourceUtils;
  * 类结构
  * AbstractResource --> Resource
  * AbstractResource <—— FileSystemResource
+ * 如果要实现自定义的资源类，直接继承该类并重写对应的方法即可
  */
 public abstract class AbstractResource implements Resource {
 
@@ -51,6 +52,7 @@ public abstract class AbstractResource implements Resource {
 	 * This implementation checks whether a File can be opened,
 	 * falling back to whether an InputStream can be opened.
 	 * This will cover both directories and content resources.
+	 * 判断文件是否存在，如果判断过程中产生异常(因为会调用SecurityManager来判断)，就关闭对应的流
 	 */
 	@Override
 	public boolean exists() {
@@ -73,6 +75,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation always returns {@code true} for a resource
 	 * that {@link #exists() exists} (revised as of 5.1).
+	 * 直接返回True，表示文件可读；exists()方法中抛出了一个异常，导致该方法只能返回一个True
 	 */
 	@Override
 	public boolean isReadable() {
@@ -81,6 +84,7 @@ public abstract class AbstractResource implements Resource {
 
 	/**
 	 * This implementation always returns {@code false}.
+	 * 直接返回false，表示文件未被打开
 	 */
 	@Override
 	public boolean isOpen() {
@@ -89,6 +93,7 @@ public abstract class AbstractResource implements Resource {
 
 	/**
 	 * This implementation always returns {@code false}.
+	 * 直接返回false，表示该资源不为File
 	 */
 	@Override
 	public boolean isFile() {
@@ -98,6 +103,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that the resource cannot be resolved to a URL.
+	 * 抛出FileNottFoundException异常，交给子类实现
 	 */
 	@Override
 	public URL getURL() throws IOException {
@@ -107,6 +113,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation builds a URI based on the URL returned
 	 * by {@link #getURL()}.
+	 * 基于getURL()方法返回的URL构建对应URI
 	 */
 	@Override
 	public URI getURI() throws IOException {
@@ -122,6 +129,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that the resource cannot be resolved to an absolute file path.
+	 * 抛出一个FileNotFoundException异常，交给子类实现
 	 */
 	@Override
 	public File getFile() throws IOException {
@@ -133,6 +141,8 @@ public abstract class AbstractResource implements Resource {
 	 * with the result of {@link #getInputStream()}.
 	 * <p>This is the same as in {@link Resource}'s corresponding default method
 	 * but mirrored here for efficient JVM-level dispatching in a class hierarchy.
+	 * 将getInputStream()方法返回的结果作为参数传入Channels的newChannel方法，并以此构建一个ReadableByteChannel
+	 * 这个方法和Resource中的默认实现相同，但是这里反映了在类层次结构中高效的JVM级调度
 	 */
 	@Override
 	public ReadableByteChannel readableChannel() throws IOException {
@@ -144,6 +154,9 @@ public abstract class AbstractResource implements Resource {
 	 * content length. Subclasses will almost always be able to provide
 	 * a more optimal version of this, e.g. checking a File length.
 	 * @see #getInputStream()
+	 * 获取资源长度
+	 *
+	 * 这个资源内容长度实际上就是资源的字节长度，通过读取资源的全部来进行计算
 	 */
 	@Override
 	public long contentLength() throws IOException {
@@ -170,6 +183,7 @@ public abstract class AbstractResource implements Resource {
 	 * This implementation checks the timestamp of the underlying File,
 	 * if available.
 	 * @see #getFileForLastModifiedCheck()
+	 * 返回资源的最后修改时间
 	 */
 	@Override
 	public long lastModified() throws IOException {
@@ -197,6 +211,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation throws a FileNotFoundException, assuming
 	 * that relative resources cannot be created for this resource.
+	 * 直接抛出一个异常，交给子类去实现
 	 */
 	@Override
 	public Resource createRelative(String relativePath) throws IOException {
@@ -206,6 +221,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation always returns {@code null},
 	 * assuming that this resource type does not have a filename.
+	 * 获取资源名称，默认返回null
 	 */
 	@Override
 	@Nullable
@@ -217,6 +233,7 @@ public abstract class AbstractResource implements Resource {
 	/**
 	 * This implementation compares description strings.
 	 * @see #getDescription()
+	 * 资源比较
 	 */
 	@Override
 	public boolean equals(Object other) {
