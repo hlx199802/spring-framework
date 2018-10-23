@@ -44,6 +44,9 @@ import org.springframework.util.StringUtils;
  * @since 10.03.2004
  * @see FileSystemResourceLoader
  * @see org.springframework.context.support.ClassPathXmlApplicationContext
+ * ResourceLoader的默认实现，接受ClassLoader作为构造参数或者不带参数；
+ * 在不带参数时，使用的ClassLoader默认为Thread.currentThread().getContextClassLoader()，可以通过ClassUtils.getDefaultClassLoader()获取
+ * 也可以调用setClassLoader()方法进行设置
  */
 public class DefaultResourceLoader implements ResourceLoader {
 
@@ -104,6 +107,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	 * resolution rules. It may therefore also override any default rules.
 	 * @since 4.3
 	 * @see #getProtocolResolvers()
+	 * 添加自定义资源加载协议
 	 */
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
@@ -144,6 +148,9 @@ public class DefaultResourceLoader implements ResourceLoader {
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
 
+		//通过ProtocolResolver进行资源加载行为，如果成功直接返回
+		//ProttocalResolver:用户自定义协议资源解决策略；允许用户在不继承ResourceLoader子类的情况下自定义资源加载协议
+		//通过实现ProtocolResolver实现资源加载协议自定义
 		for (ProtocolResolver protocolResolver : this.protocolResolvers) {
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
@@ -152,13 +159,17 @@ public class DefaultResourceLoader implements ResourceLoader {
 		}
 
 		if (location.startsWith("/")) {
+			//如果location以"/"开头，构建ClassPathContextResource类型资源并返回
 			return getResourceByPath(location);
 		}
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
+			//如果location以classpath开头，构建ClassPathResource类型资源并返回
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
 			try {
+				//尝试通过URL进行资源定位，如果没有抛出MalformedURLException异常，则判断为FileURL，构建FileUrlResource类型资源；否则构造UrlResource
+				//若在加载过程中抛出MalformedURLException异常，则委派getResourceByPath()实现资源定位加载
 				// Try to parse the location as a URL...
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));

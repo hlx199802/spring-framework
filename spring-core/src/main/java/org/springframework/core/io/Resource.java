@@ -48,7 +48,7 @@ import org.springframework.lang.Nullable;
  * @see ClassPathResource
  * @see ByteArrayResource
  * @see InputStreamResource
- * 作为所有资源的统一抽象，其子类为AbstractResource
+ * 作为所有资源的统一抽象，其子类为AbstractResource；对资源的统一定义
  */
 public interface Resource extends InputStreamSource {
 
