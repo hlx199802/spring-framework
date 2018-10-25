@@ -34,6 +34,8 @@ package org.springframework.core.io;
  * @since 1.1.3
  * @see DefaultResourceLoader
  * @see org.springframework.context.support.FileSystemXmlApplicationContext
+ * 作为DefaultResourceLoader的子类，重写其中的getResourceByPath(String)方法，对从文件系统
+ * 获取FileSystemResource提供了支持
  */
 public class FileSystemResourceLoader extends DefaultResourceLoader {
 
@@ -45,6 +47,7 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 * @return the corresponding Resource handle
 	 * @see FileSystemResource
 	 * @see org.springframework.web.context.support.ServletContextResourceLoader#getResourceByPath
+	 * 重写该方法，提供从文件系统加载资源获取FileSystemResource的支持
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {

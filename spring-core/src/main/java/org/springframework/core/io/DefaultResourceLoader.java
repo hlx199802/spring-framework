@@ -47,6 +47,9 @@ import org.springframework.util.StringUtils;
  * ResourceLoader的默认实现，接受ClassLoader作为构造参数或者不带参数；
  * 在不带参数时，使用的ClassLoader默认为Thread.currentThread().getContextClassLoader()，可以通过ClassUtils.getDefaultClassLoader()获取
  * 也可以调用setClassLoader()方法进行设置
+ * 类结构
+ * DefaultResourceLoader --> ResourceLoader
+ * FileSystemResourceLoader ——> DefaultResourceLoader
  */
 public class DefaultResourceLoader implements ResourceLoader {
 
