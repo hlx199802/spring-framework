@@ -273,27 +273,38 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		return getResourceLoader().getResource(location);
 	}
 
+	/**
+	 * 根据通配符加载资源
+	 * @param locationPattern the location pattern to resolve
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
 		Assert.notNull(locationPattern, "Location pattern must not be null");
+		//总归起来，当是通配符时才进行匹配，否则直接查找资源
 		if (locationPattern.startsWith(CLASSPATH_ALL_URL_PREFIX)) {
+			/**当传入的通配符以 ‘classpath*:' 开头时执行这个分支**/
 			// a class path resource (multiple resources for same name possible)
 			if (getPathMatcher().isPattern(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()))) {
 				// a class path resource pattern
+				//Result 1 路径中包含通配符
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
 				// all class path resources with the given name
+				//Result 2 路径中不包含通配符
 				return findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));
 			}
 		}
 		else {
 			// Generally only look for a pattern after a prefix here,
 			// and on Tomcat only after the "*/" separator for its "war:" protocol.
+			//当通配符以 war: 开头时，prefixEnd等于其第一个 */ +1 的位置；否则等于其第一个 :+1 的位置
 			int prefixEnd = (locationPattern.startsWith("war:") ? locationPattern.indexOf("*/") + 1 :
 					locationPattern.indexOf(':') + 1);
 			if (getPathMatcher().isPattern(locationPattern.substring(prefixEnd))) {
-				// a file pattern
+				//路径中包含通配符
 				return findPathMatchingResources(locationPattern);
 			}
 			else {
@@ -311,16 +322,21 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @throws IOException in case of I/O errors
 	 * @see java.lang.ClassLoader#getResources
 	 * @see #convertClassLoaderURL
+	 * 返回class路径下和所有jar包中相匹配的资源；该方法主要是通过ClassLoader来加载指定路径下的资源，无论该资源在class路径还是jar包中；如果传入的是 "" 或者 "/"的话，
+	 * 则会加载class路径以及所有jar包中的所有资源
 	 */
 	protected Resource[] findAllClassPathResources(String location) throws IOException {
 		String path = location;
 		if (path.startsWith("/")) {
+			//以 "/" 开头，则去掉 "/"
 			path = path.substring(1);
 		}
+		//真正进行资源加载
 		Set<Resource> result = doFindAllClassPathResources(path);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Resolved classpath location [" + location + "] to resources " + result);
 		}
+		//用法  toArray方法定义如下 <T> T[] toArray(T[] a);
 		return result.toArray(new Resource[0]);
 	}
 
@@ -330,18 +346,22 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @param path the absolute path within the classpath (never a leading slash)
 	 * @return a mutable Set of matching Resource instances
 	 * @since 4.1.1
+	 * 用于真实的资源加载，根据ClassLoader加载路径下的所有资源
 	 */
 	protected Set<Resource> doFindAllClassPathResources(String path) throws IOException {
 		Set<Resource> result = new LinkedHashSet<>(16);
 		ClassLoader cl = getClassLoader();
+		//如果当前类在实例化的过程中传入了ClassLoader，则调用getResource()方法，否则调用ClassLoader.getSystemResources()
 		Enumeration<URL> resourceUrls = (cl != null ? cl.getResources(path) : ClassLoader.getSystemResources(path));
 		while (resourceUrls.hasMoreElements()) {
 			URL url = resourceUrls.nextElement();
 			result.add(convertClassLoaderURL(url));
 		}
 		if ("".equals(path)) {
+			/**如果path为""**/
 			// The above result is likely to be incomplete, i.e. only containing file system references.
 			// We need to have pointers to each of the jar files on the classpath as well...
+			//加载路径下所有jar包
 			addAllClassLoaderJarRoots(cl, result);
 		}
 		return result;
