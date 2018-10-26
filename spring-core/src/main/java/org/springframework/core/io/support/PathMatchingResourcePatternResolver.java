@@ -514,15 +514,20 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @see #doFindPathMatchingJarResources
 	 * @see #doFindPathMatchingFileResources
 	 * @see org.springframework.util.PathMatcher
+	 * 根据通配符匹配资源
 	 */
 	protected Resource[] findPathMatchingResources(String locationPattern) throws IOException {
+		//确定根路径
 		String rootDirPath = determineRootDir(locationPattern);
 		String subPattern = locationPattern.substring(rootDirPath.length());
+		//获取根路径下的资源
 		Resource[] rootDirResources = getResources(rootDirPath);
+		//初始化大小为16的Set
 		Set<Resource> result = new LinkedHashSet<>(16);
 		for (Resource rootDirResource : rootDirResources) {
 			rootDirResource = resolveRootDirResource(rootDirResource);
 			URL rootDirUrl = rootDirResource.getURL();
+			//bundle 资源类型
 			if (equinoxResolveMethod != null && rootDirUrl.getProtocol().startsWith("bundle")) {
 				URL resolvedUrl = (URL) ReflectionUtils.invokeMethod(equinoxResolveMethod, null, rootDirUrl);
 				if (resolvedUrl != null) {
@@ -530,13 +535,16 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 				}
 				rootDirResource = new UrlResource(rootDirUrl);
 			}
+			//VFS 资源
 			if (rootDirUrl.getProtocol().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {
 				result.addAll(VfsResourceMatchingDelegate.findMatchingResources(rootDirUrl, subPattern, getPathMatcher()));
 			}
+			//Jar 资源
 			else if (ResourceUtils.isJarURL(rootDirUrl) || isJarResource(rootDirResource)) {
 				result.addAll(doFindPathMatchingJarResources(rootDirResource, rootDirUrl, subPattern));
 			}
 			else {
+				//否则获取所有资源
 				result.addAll(doFindPathMatchingFileResources(rootDirResource, subPattern));
 			}
 		}
@@ -557,6 +565,8 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @param location the location to check
 	 * @return the part of the location that denotes the root directory
 	 * @see #retrieveMatchingFiles
+	 * 该方法需给出一个确定的根目录；根目录用于确定文件的匹配起始点；
+	 * 通过将根目录未知的资源解析为java.io.File，并传递到retrieveMatchingFiles()，并通过匹配模式找出我们需要的资源
 	 */
 	protected String determineRootDir(String location) {
 		int prefixEnd = location.indexOf(':') + 1;
