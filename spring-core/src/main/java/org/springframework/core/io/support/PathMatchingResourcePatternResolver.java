@@ -178,6 +178,10 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.util.AntPathMatcher
  * @see org.springframework.core.io.ResourceLoader#getResource(String)
  * @see ClassLoader#getResources(String)
+ * ResourcePatternResolver最常用子类，支持Ant风格路径匹配
+ * 包含三个构造方法，默认使用DefaultResourceLoader，同时还可以自己指定ResourceLoader
+ * 类结构
+ * ResourcePatternResolver <-- PathMatchingResourcePatternResolver
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
 
@@ -267,7 +271,12 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		return this.pathMatcher;
 	}
 
-
+	/**
+	 * 该方法不由自己实现，而是委托给对应的ResourceLoader来实现；此ResourceLoader在我们实例化
+	 * PathMatchingResouorcePatternResolver的时候指定
+	 * @param location the resource location
+	 * @return
+	 */
 	@Override
 	public Resource getResource(String location) {
 		return getResourceLoader().getResource(location);
