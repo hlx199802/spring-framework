@@ -50,6 +50,9 @@ import org.springframework.core.io.ResourceLoader;
  * @see org.springframework.core.io.ResourceLoader
  * @see org.springframework.context.ApplicationContext
  * @see org.springframework.context.ResourceLoaderAware
+ * 扩展ResourceLoader，支持根据指定资源的路径匹配模式加载多个资源
+ * 类结构
+ * ResourcePatternResolver ——> ResourceLoader
  */
 public interface ResourcePatternResolver extends ResourceLoader {
 
@@ -59,6 +62,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * retrieves all matching resources for a given name (e.g. "/beans.xml"),
 	 * for example in the root of all deployed JAR files.
 	 * @see org.springframework.core.io.ResourceLoader#CLASSPATH_URL_PREFIX
+	 * 协议前缀 由其子类实现
 	 */
 	String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
@@ -67,7 +71,7 @@ public interface ResourcePatternResolver extends ResourceLoader {
 	 * <p>Overlapping resource entries that point to the same physical
 	 * resource should be avoided, as far as possible. The result should
 	 * have set semantics.
-	 * @param locationPattern the location pattern to resolve
+	 * @param locationPattern the location pattern to resolve 根据路径匹配模式返回多个Resource实例
 	 * @return the corresponding Resource objects
 	 * @throws IOException in case of I/O errors
 	 */
