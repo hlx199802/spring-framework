@@ -50,6 +50,9 @@ import org.springframework.lang.Nullable;
  * @since 31.07.2003
  * @see org.springframework.core.io.ResourceLoader
  * @see org.springframework.context.ApplicationContext
+ * 继承自EntityResolver的实现类DelegatingEntityResolver，根据ResourceLoader来解析实体的引用
+ * 类结构
+ * EntityResolver <-- DelegatingEntityResolver <—— ResourceEntityResolver
  */
 public class ResourceEntityResolver extends DelegatingEntityResolver {
 

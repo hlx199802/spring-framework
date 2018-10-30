@@ -40,6 +40,9 @@ import org.springframework.lang.Nullable;
  * @author Colin Sampaleanu
  * @since 04.06.2003
  * @see ResourceEntityResolver
+ * EntityResolver的实现类，spring bean dtd解析器；用于从classpath或jar文件加载dtd
+ * 类结构
+ * EntityResolver <-- BeansDtdResolver
  */
 public class BeansDtdResolver implements EntityResolver {
 

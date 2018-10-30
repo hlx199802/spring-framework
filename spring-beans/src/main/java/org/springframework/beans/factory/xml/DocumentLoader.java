@@ -27,18 +27,21 @@ import org.xml.sax.InputSource;
  * @author Rob Harrop
  * @since 2.0
  * @see DefaultDocumentLoader
+ * Document加载器，其拥有子类DefaultDocumentLoader
+ * 类结构
+ * DocumentLoader <-- DefaultDocumentLoader
  */
 public interface DocumentLoader {
 
 	/**
 	 * Load a {@link Document document} from the supplied {@link InputSource source}.
-	 * @param inputSource the source of the document that is to be loaded
-	 * @param entityResolver the resolver that is to be used to resolve any entities
-	 * @param errorHandler used to report any errors during document loading
-	 * @param validationMode the type of validation
+	 * @param inputSource the source of the document that is to be loaded => Resource源
+	 * @param entityResolver the resolver that is to be used to resolve any entities => 文件解析器
+	 * @param errorHandler used to report any errors during document loading => 错误处理器
+	 * @param validationMode the type of validation => 验证模式
 	 * {@link org.springframework.util.xml.XmlValidationModeDetector#VALIDATION_DTD DTD}
 	 * or {@link org.springframework.util.xml.XmlValidationModeDetector#VALIDATION_XSD XSD})
-	 * @param namespaceAware {@code true} if support for XML namespaces is to be provided
+	 * @param namespaceAware {@code true} if support for XML namespaces is to be provided => 是否支持命名空间，如果支持命名空间则为true
 	 * @return the loaded {@link Document document}
 	 * @throws Exception if an error occurs
 	 */

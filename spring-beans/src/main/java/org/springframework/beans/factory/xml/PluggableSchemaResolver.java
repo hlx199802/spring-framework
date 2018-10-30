@@ -54,6 +54,9 @@ import org.springframework.util.CollectionUtils;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
+ * EntityResolver的实现类，通过使用一系列Map文件将schema url解析到本地的classpath资源
+ * 类结构
+ * EntityResolver <-- PluggableSchemaResolver
  */
 public class PluggableSchemaResolver implements EntityResolver {
 

@@ -35,6 +35,9 @@ import org.springframework.util.Assert;
  * @since 2.0
  * @see BeansDtdResolver
  * @see PluggableSchemaResolver
+ * EntityResolver的实现，分别代理了dtd的BeanDtdResolver和xml schemas的PluggableSchemaResolver
+ * 类结构
+ * EntityResolver <-- DelegatingEntityResolver
  */
 public class DelegatingEntityResolver implements EntityResolver {
 
@@ -57,6 +60,7 @@ public class DelegatingEntityResolver implements EntityResolver {
 	 * {@link ClassLoader}.
 	 * @param classLoader the ClassLoader to use for loading
 	 * (can be {@code null}) to use the default ClassLoader)
+	 * 默认委托给BeanDtdResolver和PluggableSchemaResolver
 	 */
 	public DelegatingEntityResolver(@Nullable ClassLoader classLoader) {
 		this.dtdResolver = new BeansDtdResolver();
