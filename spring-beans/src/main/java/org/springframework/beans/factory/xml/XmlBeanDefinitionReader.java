@@ -396,13 +396,18 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 * @see #doLoadDocument
 	 * @see #registerBeanDefinitions
+	 * 主要有以下三个任务
+	 * 1.调用getValidationModeForResource方法获取xml文件的验证模式
+	 * 2.调用loadDocument方法根据xml文件获取相应的Document实例
+	 * 3.调用registerBeanDefinitions方法注册Bean实例
 	 */
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 
 		try {
-			//获取Document实例
+			//获取Document实例 => 根据xml文件获取Document实例，文件内容包含在InputStream中
 			Document doc = doLoadDocument(inputSource, resource);
+			//根据Document实例进行Bean注册
 			int count = registerBeanDefinitions(doc, resource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Loaded " + count + " bean definitions from " + resource);
@@ -444,6 +449,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see DocumentLoader#loadDocument
 	 */
 	protected Document doLoadDocument(InputSource inputSource, Resource resource) throws Exception {
+		//getValidationModeForResource(resource)方法用于获取资源验证模式
 		return this.documentLoader.loadDocument(inputSource, getEntityResolver(), this.errorHandler,
 				getValidationModeForResource(resource), isNamespaceAware());
 	}
@@ -455,6 +461,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * <p>Override this method if you would like full control over the validation
 	 * mode, even when something other than {@link #VALIDATION_AUTO} was set.
 	 * @see #detectValidationMode
+	 * 验证模式简单解析
+	 * 概念：DTD与XSD
+	 * DTD: Document Type Definition，定义XML中的词汇和语法；重用性差，约束力弱，扩展能力差，描述能力有限
+	 * XSD: XML Schema；基于XML；数据类型丰富；可扩充；支持综合命名空间；支持属性组
 	 */
 	protected int getValidationModeForResource(Resource resource) {
 		//获取指定的验证模式
