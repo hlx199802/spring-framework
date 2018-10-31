@@ -115,11 +115,16 @@ public class PluggableSchemaResolver implements EntityResolver {
 		}
 
 		if (systemId != null) {
+			//根据映射表，从中取出键为systemId的值
+			//映射表中映射的是所有资源在本地的系统Id和其对应的资源位置 => systemId:resourceLocation
 			String resourceLocation = getSchemaMappings().get(systemId);
 			if (resourceLocation != null) {
+				//加载资源
 				Resource resource = new ClassPathResource(resourceLocation, this.classLoader);
 				try {
+					//获取InputSource
 					InputSource source = new InputSource(resource.getInputStream());
+					//设置publicId 和 systemId
 					source.setPublicId(publicId);
 					source.setSystemId(systemId);
 					if (logger.isTraceEnabled()) {
@@ -139,6 +144,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 
 	/**
 	 * Load the specified schema mappings lazily.
+	 * 获取映射表
 	 */
 	private Map<String, String> getSchemaMappings() {
 		Map<String, String> schemaMappings = this.schemaMappings;

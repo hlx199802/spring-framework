@@ -256,6 +256,18 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Return the EntityResolver to use, building a default resolver
 	 * if none specified.
 	 * 返回指定的文件解析器，如果没有指定，则返回一个默认的文件解析器
+	 * EntityResolver的用法是：如果一个SAX应用程序需要实现自定义外实体，必须实现EntityResolver接口并使用setEntityResolver方法向SAX驱动器注册一个实例
+	 * EntityResolver的作用是：应用程序本身可以提供一个如何寻找验证文件的方法
+	 * EntityResolver的方法：public abstract InputSource resolveEntity(String publicId, String systemId);
+	 * publicId：被引用的外部实体的公共标识符，如果没有提供，返回null
+	 * systemId：被引用的外部实体的系统标识符
+	 * 两个参数的实际内容与具体的验证模式的关系
+	 * XSD验证模式：
+	 * 		publicId: null
+	 * 		systemId: http://www.springframework.org/dtd/schema/beans/spring-beans.xsd
+	 * DTD验证模式：
+	 * 		publicId: -//SPRING//DTD BEAN 2.0//EN
+	 * 	 	systemId: http://www.springframework.org/dtd/spring-beans.dtd
 	 */
 	protected EntityResolver getEntityResolver() {
 		if (this.entityResolver == null) {
@@ -539,9 +551,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		//实例化BeanDefinitionDocumentReader对象
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		//获取统计前BeanDefinition个数
 		int countBefore = getRegistry().getBeanDefinitionCount();
+		//注册Bean -- 从给定的Document对象中解析定义的BeanDefinition并将其注册刀注册表中
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
+		//返回成功注册的Bean的数量   前 - 后
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
 
@@ -550,6 +566,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * reading bean definitions from an XML document.
 	 * <p>The default implementation instantiates the specified "documentReaderClass".
 	 * @see #setDocumentReaderClass
+	 * documentReaderClass中指定的是DefaultBeanDefinitionDocumentReader.class
 	 */
 	protected BeanDefinitionDocumentReader createBeanDefinitionDocumentReader() {
 		return BeanUtils.instantiateClass(this.documentReaderClass);
@@ -557,6 +574,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 	/**
 	 * Create the {@link XmlReaderContext} to pass over to the document reader.
+	 * 根据Resource来构造XmlReaderContext
 	 */
 	public XmlReaderContext createReaderContext(Resource resource) {
 		return new XmlReaderContext(resource, this.problemReporter, this.eventListener,
