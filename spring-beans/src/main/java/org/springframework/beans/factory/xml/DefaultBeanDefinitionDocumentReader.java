@@ -121,6 +121,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Register each bean definition within the given root {@code <beans/>} element.
+	 * 处理Profile -> parseBeanDefinitions ->
+	 * profile主要用于环境切换，比如切换开发环境、测试环境和生产环境
 	 */
 	@SuppressWarnings("deprecation")  // for Environment.acceptsProfiles(String...)
 	protected void doRegisterBeanDefinitions(Element root) {
@@ -173,6 +175,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Parse the elements at the root level in the document:
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
+	 * 解析Element对象，存在两种解析方式 parseDefaultElement 和 parseCustomElement ；主要是由于Spring中Bean的不同的声明方式所决定的
+	 * 配置文件声明: <bean id = "xxx" class = "yyy"/>
+	 * 自定义注解声明: <tx:annotation-driven/>
+	 * 如果根节点或者子节点采用默认命名空间的话，调用parseDefaultElement进行解析；否则调用delegate.parseCustomElement进行自定义解析
 	 */
 	protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
 		if (delegate.isDefaultNamespace(root)) {
@@ -196,15 +202,19 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+		//对import标签进行解析
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);
 		}
+		//对alias标签进行解析
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			processAliasRegistration(ele);
 		}
+		//对bean标签进行解析
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
 			processBeanDefinition(ele, delegate);
 		}
+		//对beans标签解析
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
 			// recurse
 			doRegisterBeanDefinitions(ele);
@@ -214,32 +224,43 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	/**
 	 * Parse an "import" element and load the bean definitions
 	 * from the given resource into the bean factory.
+	 * 解析import标签
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
+		//RESOURCE_ATTRIBUTE = "resource" 获取resource的属性值
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
+		//为空，直接退出，抛出异常 Resoure locatioon mustt not be empty
 		if (!StringUtils.hasText(location)) {
 			getReaderContext().error("Resource location must not be empty", ele);
 			return;
 		}
 
 		// Resolve system properties: e.g. "${user.dir}"
+		//解析系统属性，格式如"${user.dir}"
 		location = getReaderContext().getEnvironment().resolveRequiredPlaceholders(location);
 
 		Set<Resource> actualResources = new LinkedHashSet<>(4);
 
 		// Discover whether the location is an absolute or relative URI
+		//判断该路径是相对路径还是绝对路径，默认为相对路径
 		boolean absoluteLocation = false;
 		try {
+			//以classpath*:或classpath:开头的是绝对路径
+			//能够通过该location构建java.net.URL时表示是绝对路径
+			//根据location构建java.net.URI调用isAbsolute方法判断是否为绝对路径
 			absoluteLocation = ResourcePatternUtils.isUrl(location) || ResourceUtils.toURI(location).isAbsolute();
 		}
 		catch (URISyntaxException ex) {
 			// cannot convert to an URI, considering the location relative
 			// unless it is the well-known Spring prefix "classpath*:"
+			//如果处理出错，默认为相对路径
 		}
 
 		// Absolute or relative?
+		//绝对路径
 		if (absoluteLocation) {
 			try {
+				//根据地址加载相应的配置文件；返回对应的加载的Bean的数量
 				int importCount = getReaderContext().getReader().loadBeanDefinitions(location, actualResources);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Imported " + importCount + " bean definitions from URL location [" + location + "]");
@@ -250,15 +271,21 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						"Failed to import bean definitions from URL location [" + location + "]", ele, ex);
 			}
 		}
+		//相对路径
 		else {
 			// No URL -> considering resource location as relative to the current file.
+			//根据相对路径地址计算出对应的绝对路径
+			//以当前文件所在路径作为计算基点
 			try {
 				int importCount;
+				//获取相对位置的资源
 				Resource relativeResource = getReaderContext().getResource().createRelative(location);
 				if (relativeResource.exists()) {
+					//资源存在 调用的是XmlBeanDefinitionReader的loadBeanDefinitions方法，参照Spring统一资源加载方式
 					importCount = getReaderContext().getReader().loadBeanDefinitions(relativeResource);
 					actualResources.add(relativeResource);
 				}
+				//资源不存在
 				else {
 					String baseLocation = getReaderContext().getResource().getURL().toString();
 					importCount = getReaderContext().getReader().loadBeanDefinitions(
@@ -276,6 +303,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 						"Failed to import bean definitions from relative location [" + location + "]", ele, ex);
 			}
 		}
+		//通知监听器激活完成
 		Resource[] actResArray = actualResources.toArray(new Resource[0]);
 		getReaderContext().fireImportProcessed(location, actResArray, extractSource(ele));
 	}
@@ -338,6 +366,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Implementors have access to the parser's bean definition reader and the
 	 * underlying XML resource, through the corresponding accessors.
 	 * @see #getReaderContext()
+	 * 解析前操作，此处为空实现，交由子类实现
 	 */
 	protected void preProcessXml(Element root) {
 	}
@@ -351,6 +380,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Implementors have access to the parser's bean definition reader and the
 	 * underlying XML resource, through the corresponding accessors.
 	 * @see #getReaderContext()
+	 * 解析后操作，此处为空实现，交由子类实现
 	 */
 	protected void postProcessXml(Element root) {
 	}

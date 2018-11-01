@@ -81,6 +81,7 @@ import org.springframework.util.xml.DomUtils;
  * @since 2.0
  * @see ParserContext
  * @see DefaultBeanDefinitionDocumentReader
+ * 委托类
  */
 public class BeanDefinitionParserDelegate {
 
