@@ -53,6 +53,7 @@ public abstract class BeanDefinitionReaderUtils {
 	 * (can be {@code null} to just register bean classes by name)
 	 * @return the bean definition
 	 * @throws ClassNotFoundException if the bean class could not be loaded
+	 * 创建一个GenericBeanDefinition对象，主要是设置parentName, className, classLoader
 	 */
 	public static AbstractBeanDefinition createBeanDefinition(
 			@Nullable String parentName, @Nullable String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException {

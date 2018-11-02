@@ -36,6 +36,18 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableListableBeanFactory#getBeanDefinition
  * @see org.springframework.beans.factory.support.RootBeanDefinition
  * @see org.springframework.beans.factory.support.ChildBeanDefinition
+ * 描述Bean实例，包括属性值，构造方法值和继承自其他类的更多信息
+ * 类结构
+ * BeanDefinition ——> AttributeAccessor
+ * BeanDefinition ——> BeanMetadataElement
+ * AbstractBeanDefinition --> BeanDefinition
+ * AnnotatedBeanDefinition ——> BeanDefinition
+ * ChildBeanDefinition ——> AbstractBeanDefinition
+ * GenericBeanDefinition ——> AbstractBeanDefinition
+ * RootBeanDefinition ——> AbstractBeanDefinition
+ * 如果配置文件中定义了父<bean>和子<bean>，则父<bean>用RootBeanDefinition表示，子<bean>用ChildBeanDefinition表示；
+ * 而如果没有父<bean>则直接使用RootBeanDefinition表示
+ * GenericBeanDefinition是一站式服务类(门面类？)
  */
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 

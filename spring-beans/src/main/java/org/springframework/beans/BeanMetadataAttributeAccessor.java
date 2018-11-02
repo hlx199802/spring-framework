@@ -68,6 +68,11 @@ public class BeanMetadataAttributeAccessor extends AttributeAccessorSupport impl
 		return (BeanMetadataAttribute) super.getAttribute(name);
 	}
 
+	/**
+	 * 委托AttributeAccessorSupport的setAttributef方法作为实现
+	 * @param name
+	 * @param value
+	 */
 	@Override
 	public void setAttribute(String name, @Nullable Object value) {
 		super.setAttribute(name, new BeanMetadataAttribute(name, value));

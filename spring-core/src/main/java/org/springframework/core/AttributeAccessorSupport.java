@@ -33,6 +33,9 @@ import org.springframework.util.StringUtils;
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
+ * AttributeAccessor接口的实现类；维护了一个Map
+ * 类结构
+ * AttributeAccessor <-- AttributeAccessorSupport
  */
 @SuppressWarnings("serial")
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {

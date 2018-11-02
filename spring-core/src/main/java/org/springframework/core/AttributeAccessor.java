@@ -24,6 +24,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Rob Harrop
  * @since 2.0
+ * 属性存储器，定义了与其他对象(元数据)进行连接和访问的约定，即对属性的修改；包括获取、设置和删除
+ * 类结构
+ * AttributeAccessor <—— BeanDefinition
  */
 public interface AttributeAccessor {
 
