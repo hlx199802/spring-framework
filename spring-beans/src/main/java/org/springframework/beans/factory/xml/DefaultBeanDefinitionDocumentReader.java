@@ -341,12 +341,12 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * Bean元素解析
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
-		//元素解析 -- 如果解析失败，返回null；如果解析成功返回BeanDefinitionHolder的实例
+		//元素解析 -- 如果解析失败，返回null；如果解析成功返回BeanDefinitionHolder的实例 -- 主要解析<bean>标签及其子元素，主要是默认标签
 		//BeanDefinitionHolder是持有name和alias的BeanDefinition
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			//如果bdHolder不为空
-			//自定义标签处理
+			//自定义标签处理 -- 解析自定义标签
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
