@@ -119,6 +119,8 @@ public class XmlReaderContext extends ReaderContext {
 	 * Return the namespace resolver.
 	 * @see XmlBeanDefinitionReader#setNamespaceHandlerResolver
 	 */
+	//返回命名空间解析器
+	//注意初始化时机
 	public final NamespaceHandlerResolver getNamespaceHandlerResolver() {
 		return this.namespaceHandlerResolver;
 	}

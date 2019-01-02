@@ -115,32 +115,43 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	@Override
 	@Nullable
 	public NamespaceHandler resolve(String namespaceUri) {
+		//获取所有已经配置的Handler映射 <命名空间，类路径>
 		Map<String, Object> handlerMappings = getHandlerMappings();
+
+		//根据命名空间获取Handler的信息：此处一般指类路径
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);
 		if (handlerOrClassName == null) {
 			return null;
 		}
 		else if (handlerOrClassName instanceof NamespaceHandler) {
+			//如果已经做过解析，直接返回
 			return (NamespaceHandler) handlerOrClassName;
 		}
 		else {
 			String className = (String) handlerOrClassName;
 			try {
+				//加载处理器类
 				Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
 				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
+				//初始化类
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
+				//调用该类的init()方法，用于讲自定义标签解析器进行注册
 				namespaceHandler.init();
+				//在缓存中记录
 				handlerMappings.put(namespaceUri, namespaceHandler);
+				//返回
 				return namespaceHandler;
 			}
 			catch (ClassNotFoundException ex) {
+				//可能抛出命名空间无法找到异常
 				throw new FatalBeanException("Could not find NamespaceHandler class [" + className +
 						"] for namespace [" + namespaceUri + "]", ex);
 			}
 			catch (LinkageError err) {
+				//可能抛出无法处理BeanDefinition异常
 				throw new FatalBeanException("Unresolvable class definition for NamespaceHandler class [" +
 						className + "] for namespace [" + namespaceUri + "]", err);
 			}
