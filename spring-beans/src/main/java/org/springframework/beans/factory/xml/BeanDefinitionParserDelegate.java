@@ -1473,6 +1473,7 @@ public class BeanDefinitionParserDelegate {
 		return handler.parse(ele, new ParserContext(this.readerContext, this, containingBd));
 	}
 
+	//由DefaultBeanDefinitionDocumentReader第349行调用，用于解析自定义标签
 	public BeanDefinitionHolder decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder) {
 		return decorateBeanDefinitionIfRequired(ele, definitionHolder, null);
 	}
@@ -1483,15 +1484,16 @@ public class BeanDefinitionParserDelegate {
 		BeanDefinitionHolder finalDefinition = definitionHolder;
 
 		// Decorate based on custom attributes first.
-		// 遍历节点
+		// 遍历节点，查看是否有适用于装饰的属性
 		NamedNodeMap attributes = ele.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node node = attributes.item(i);
+			//重点方法1：decorateIfRequired
 			finalDefinition = decorateIfRequired(node, finalDefinition, containingBd);
 		}
 
 		// Decorate based on custom nested elements.
-		// 遍历子节点
+		// 遍历子节点，查看是否有适用于修饰的子元素
 		NodeList children = ele.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
@@ -1507,12 +1509,12 @@ public class BeanDefinitionParserDelegate {
 
 		// 获取自定义标签命名空间
 		String namespaceUri = getNamespaceURI(node);
-		// 过滤掉默认命名空间
+		// 过滤掉默认命名空间 -- 如果不是默认的命名空间，则根据该命名空间获取相应的处理器
 		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {
-			//获取处理器
+			//获取命名空间处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
-				//进行装饰处理
+				//如果命名空间处理器不为空，则调用处理器的decorate方法进行装饰处理
 				BeanDefinitionHolder decorated =
 						handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 				if (decorated != null) {

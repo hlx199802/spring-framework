@@ -346,7 +346,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			//如果bdHolder不为空
-			//自定义标签处理 -- 解析自定义标签
+			//自定义标签处理 -- 解析自定义标签 BeanDefinitionParserDelegate 1478行
 			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
 			try {
 				// Register the final decorated instance.
