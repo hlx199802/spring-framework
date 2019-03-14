@@ -27,9 +27,12 @@ import java.nio.channels.ReadableByteChannel;
 import org.springframework.lang.Nullable;
 
 /**
+ * 从潜在的资源中抽象出的实际资源类型的描述符，比如文件资源或者类资源。
  * Interface for a resource descriptor that abstracts from the actual
  * type of underlying resource, such as a file or class path resource.
  *
+ * 任何以物理形式存在的资源都能被转化为输入流，但对于某些资源而言，其只能返回一个
+ * URL或文件句柄（？句柄的具体含义）。其具体行为依赖于具体实现。
  * <p>An InputStream can be opened for every resource if it exists in
  * physical form, but a URL or File handle can just be returned for
  * certain resources. The actual behavior is implementation-specific.
