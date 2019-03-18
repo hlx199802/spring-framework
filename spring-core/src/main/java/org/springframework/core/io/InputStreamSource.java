@@ -58,12 +58,16 @@ public interface InputStreamSource {
 	 * 多次读取流。
 	 * <p>This requirement is particularly important when you consider an API such
 	 * as JavaMail, which needs to be able to read the stream multiple times when
-	 * creating mail attachments. For such a use case, it is <i>required</i>
+	 * creating mail attachments.
+	 * 对于类似的用途，它要求每次的调用都能够返回一个新的输入流。
+	 * For such a use case, it is <i>required</i>
 	 * that each {@code getInputStream()} call returns a fresh stream.
+	 * 返回底层文件资源输入流，底层文件资源不能为null。
 	 * @return the input stream for the underlying resource (must not be {@code null})
+	 * 如果底层文件资源不存在，将会抛出java.io.FileNotFoundException。
 	 * @throws java.io.FileNotFoundException if the underlying resource doesn't exist
+	 * 如果内容流无法获得，将会抛出IOException。
 	 * @throws IOException if the content stream could not be opened
-	 * 获取内容输入流
 	 */
 	InputStream getInputStream() throws IOException;
 

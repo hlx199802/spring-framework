@@ -31,24 +31,22 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ResourceUtils;
 
 /**
+ * Resource实现的便利性基类，预实现某些特定行为。
  * Convenience base class for {@link Resource} implementations,
  * pre-implementing typical behavior.
  *
+ * exists()方法会检查一个文件或一个输入流是否能被打开；isOpen()方法始终返回false；getURL()和getFile()始终抛出异常，toString()返回一个描述符。
  * <p>The "exists" method will check whether a File or InputStream can
  * be opened; "isOpen" will always return false; "getURL" and "getFile"
  * throw an exception; and "toString" will return the description.
  *
  * @author Juergen Hoeller
  * @since 28.12.2003
- * 实现了org.springframework.core.io.Resource接口，抽象类
- * 类结构
- * AbstractResource --> Resource
- * AbstractResource <—— FileSystemResource
- * 如果要实现自定义的资源类，直接继承该类并重写对应的方法即可
  */
 public abstract class AbstractResource implements Resource {
 
 	/**
+	 * 该具体实现检查一个文件是否能被打开，从更深层次检查一个输入流能否被打开。
 	 * This implementation checks whether a File can be opened,
 	 * falling back to whether an InputStream can be opened.
 	 * This will cover both directories and content resources.
